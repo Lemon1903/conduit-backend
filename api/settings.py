@@ -14,21 +14,22 @@ from pathlib import Path
 import sys
 import os
 
+from decouple import config, Csv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wx0egbzjdk513n7mb!ve^v0j5d$+t$#75x20@88^n#=39igbbe'
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DJANGO_DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', cast=Csv())
 
 
 # Application definition
@@ -80,8 +81,12 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('PG_DATABASE_NAME'),
+        'USER': config('PG_DATABASE_USER'),
+        'PASSWORD': config('PG_DATABASE_PASSWORD'),
+        'HOST': config('PG_DATABASE_HOST'),
+        'PORT': config('PG_DATABASE_PORT'),
     }
 }
 
