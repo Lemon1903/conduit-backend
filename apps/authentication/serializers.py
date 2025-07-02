@@ -1,13 +1,14 @@
 from django.contrib import auth
-from tokenize import TokenError
+from django.db import IntegrityError
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(validators=[])
+    email = serializers.EmailField(validators=[])
     password = serializers.CharField(min_length=8, write_only=True)
 
     class Meta:
@@ -25,8 +26,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        # `create_user` would handle hashing and default behavior
-        return User.objects.create_user(**validated_data)
+        try:
+            # `create_user` would handle hashing and default behavior
+            return User.objects.create_user(**validated_data)
+        except:
+            raise serializers.ValidationError(
+                "An account with the provided credentials already exists.",
+            )
 
 
 class LoginSerializer(serializers.Serializer):
@@ -39,24 +45,10 @@ class LoginSerializer(serializers.Serializer):
         user = auth.authenticate(email=email, password=password)
 
         if user is None:
-            raise AuthenticationFailed("Invalid Credentials.")
+            raise AuthenticationFailed("Email or password is incorrect.")
 
         if not user.is_active:
             raise AuthenticationFailed("Account disabled.")
 
         attrs["user"] = user
         return attrs
-
-
-class LogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
-
-    def validate(self, attrs):
-        self.token = attrs.get("refresh", "")
-        return attrs
-
-    def save(self, **kwargs):
-        try:
-            RefreshToken(self.token).blacklist()
-        except TokenError:
-            self.fail("Bad Token.")
