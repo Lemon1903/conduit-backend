@@ -11,14 +11,22 @@ class ProfileViewSerializer(serializers.ModelSerializer):
         fields = ["bio", "image", "followers"]
 
     def to_representation(self, instance):
+        request = self.context.get("request")
         rep = super().to_representation(instance)
+        rep.pop("followers", None)
+
+        rep["following"] = False
+        if request and request.user.is_authenticated:
+            user_who_follows = instance.followers.filter(user=request.user)
+            rep["following"] = user_who_follows.exists()
+
         rep["username"] = instance.user.username
         rep["email"] = instance.user.email
         return rep
 
 
 # This is for route: # /user/
-class ProfileViewUpdateSerializer(serializers.ModelSerializer):
+class OwnProfileViewUpdateSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username", required=False)
     email = serializers.CharField(source="user.email", required=False)
     password = serializers.CharField(
@@ -39,7 +47,7 @@ class ProfileViewUpdateSerializer(serializers.ModelSerializer):
         user = instance.user
         password = user_data.pop("password", None)
 
-        if password is not None:
+        if password:
             user.set_password(password)
 
         for attr, value in user_data.items():
