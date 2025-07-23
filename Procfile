@@ -1,0 +1,1 @@
+web: gunicorn api.wsgi:application --workers 3
