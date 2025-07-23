@@ -162,7 +162,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = (
-    [] if DEBUG else ["https://conduit-backend-api.up.railway.app/"]
+    [] if DEBUG else ["https://conduit-backend-api.up.railway.app/*"]
 )
 
 CSRF_COOKIE_SECURE = not DEBUG
