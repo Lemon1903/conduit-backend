@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView, CreateAPIView
@@ -63,8 +64,8 @@ class Login(GenericAPIView):
             key="refresh_token",
             value=str(refresh_token),
             httponly=True,
-            secure=False,  # set to True in production!!
-            samesite="Lax",
+            secure=not settings.DEBUG,
+            samesite="None" if not settings.DEBUG else "Lax",
             max_age=60 * 60 * 24 * 7,  # 7 days in seconds
         )
 
