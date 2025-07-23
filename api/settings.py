@@ -31,7 +31,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 
 # ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", cast=Csv())
-ALLOWED_HOSTS = ["conduit-backend-api.up.railway.app"] if DEBUG else ["*"]
+ALLOWED_HOSTS = ["*"] if DEBUG else ["conduit-backend-api.up.railway.app"]
 
 
 # Application definition
@@ -162,11 +162,11 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = (
-    ["https://conduit-backend-api.up.railway.app/"] if DEBUG else []
+    [] if DEBUG else ["https://conduit-backend-api.up.railway.app/"]
 )
 
-CSRF_COOKIE_SECURE = DEBUG
-SESSION_COOKIE_SECURE = DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
 
 STORAGES = {
     "staticfiles": {
