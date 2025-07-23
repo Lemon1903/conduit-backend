@@ -1,1 +1,1 @@
-web: gunicorn api.wsgi:application --workers 3
+web: python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn api.wsgi:application --workers 3
