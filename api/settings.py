@@ -159,6 +159,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://conduit-frontend-six.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = (
